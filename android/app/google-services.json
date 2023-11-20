@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "808698891072",
+    "project_id": "lora-business-flutter",
+    "storage_bucket": "lora-business-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808698891072:android:f2dc3d8c6a3c4db1e688a5",
+        "android_client_info": {
+          "package_name": "com.example.lora_business_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt8D8c1EicwpfMM7jKUe0h1pUbfnjCE4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
