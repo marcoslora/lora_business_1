@@ -1,6 +1,10 @@
+// ignore_for_file: avoid_print
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lora_business_1/src/auth/models/user_model.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -12,6 +16,7 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -20,6 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -52,6 +58,27 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(
                   height: 40,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        hintText: 'Name',
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -130,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     onPressed: () {
-                      singUp();
+                      signUp();
                     },
                     child: Text(
                       'Sign Up',
@@ -164,17 +191,34 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void singUp() {
+  void signUp() {
     if (_passwordController.text.trim() !=
         _confirmPasswordController.text.trim()) {
       print('Password not match');
       return;
     }
+
     FirebaseAuth.instance
         .createUserWithEmailAndPassword(
             email: _emailController.text.trim().toLowerCase(),
             password: _passwordController.text.trim())
-        .then((value) {
+        .then((userCredential) {
+      UserModel newUser = UserModel(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        name: _nameController.text.trim(),
+        lastName: '',
+        uid: userCredential.user!.uid,
+      );
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set(newUser.toJson())
+          .then((value) {
+        print('User added to Firestore');
+      }).catchError((onError) {
+        print('Error saving user to Firestore: $onError');
+      });
       print('Success');
     }).catchError((onError) {
       print(onError);
