@@ -1,6 +1,6 @@
 class PagoModels {
-  double monto;
-  DateTime fecha;
+  double amount;
+  DateTime date;
 
-  PagoModels({required this.monto, required this.fecha});
+  PagoModels({required this.amount, required this.date});
 }

@@ -1,14 +1,17 @@
 {
+  "cSpell.language": "en,es-ES",
   "cSpell.words": [
     "agregar",
     "Alquileres",
     "Colmados",
+    "Dialogo",
     "fecha",
     "Firestore",
     "inquilino",
     "inquilinos",
     "Loessa",
     "monto",
+    "mostrar",
     "obtener",
     "pago",
     "Pagos"

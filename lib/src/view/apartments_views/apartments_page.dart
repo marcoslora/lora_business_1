@@ -32,19 +32,28 @@ class ApartmentsPage extends StatelessWidget {
 
 List<ApartmentModel> apartments = [
   ApartmentModel(
-    id: "1",
-    imageUrl:
-        'https://uphomesimages.com/bdomls/c415b43e05a791f9c3ca7bba87ccf9a1/main/image-c415b43e05a791f9c3ca7bba87ccf9a1-0.jpg',
-    name: 'Apartment 1',
-    rent: 1000,
-    contractEndDate: '31/12/2023',
-  ),
+      id: "1",
+      imageUrl:
+          'https://uphomesimages.com/bdomls/c415b43e05a791f9c3ca7bba87ccf9a1/main/image-c415b43e05a791f9c3ca7bba87ccf9a1-0.jpg',
+      name: 'Gustavo',
+      rent: 1200,
+      ipi: 974,
+      ipiDate: "01/09/2023",
+      insuranceAnual: 600,
+      homeOwnerAssociation: 268,
+      address: '4721 WALDEN POND DR # C',
+      contractEndDate: "31/12/2023"),
   ApartmentModel(
     id: "2",
     imageUrl:
         'https://uphomesimages.com/bdomls/c415b43e05a791f9c3ca7bba87ccf9a1/main/image-c415b43e05a791f9c3ca7bba87ccf9a1-0.jpg',
     name: 'Apartment 2',
-    rent: 1000,
+    address: 'Calle 1, #1, Santo Domingo',
+    ipiDate: "01/09/2023",
+    ipi: 100,
+    insuranceAnual: 600,
+    homeOwnerAssociation: 268,
+    rent: 1200,
     contractEndDate: '31/12/2023',
   ),
   ApartmentModel(
@@ -52,7 +61,38 @@ List<ApartmentModel> apartments = [
     imageUrl:
         'https://uphomesimages.com/bdomls/c415b43e05a791f9c3ca7bba87ccf9a1/main/image-c415b43e05a791f9c3ca7bba87ccf9a1-0.jpg',
     name: 'Apartment 3',
-    rent: 1000,
+    address: 'Calle 1, #1, Santo Domingo',
+    ipiDate: "01/09/2023",
+    insuranceAnual: 100,
+    homeOwnerAssociation: 600,
+    ipi: 100,
+    rent: 1200,
+    contractEndDate: '31/12/2023',
+  ),
+  ApartmentModel(
+    id: "4",
+    imageUrl:
+        'https://uphomesimages.com/bdomls/c415b43e05a791f9c3ca7bba87ccf9a1/main/image-c415b43e05a791f9c3ca7bba87ccf9a1-0.jpg',
+    name: 'Apartment 3',
+    address: 'Calle 1, #1, Santo Domingo',
+    ipiDate: "01/09/2023",
+    insuranceAnual: 100,
+    homeOwnerAssociation: 600,
+    ipi: 100,
+    rent: 1200,
+    contractEndDate: '31/12/2023',
+  ),
+  ApartmentModel(
+    id: "5",
+    imageUrl:
+        'https://uphomesimages.com/bdomls/c415b43e05a791f9c3ca7bba87ccf9a1/main/image-c415b43e05a791f9c3ca7bba87ccf9a1-0.jpg',
+    name: 'Apartment 3',
+    address: 'Calle 1, #1, Santo Domingo',
+    ipiDate: "01/09/2023",
+    insuranceAnual: 100,
+    homeOwnerAssociation: 600,
+    ipi: 100,
+    rent: 1200,
     contractEndDate: '31/12/2023',
   ),
 ];

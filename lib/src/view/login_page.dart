@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lora_business_1/src/repository/sing_in_repository.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegister;
@@ -11,20 +11,71 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  late ValueNotifier<String?> _emailErrorNotifier;
+  late ValueNotifier<String?> _passwordErrorNotifier;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late ValueNotifier<bool> _obscureTextNotifier;
+  final SingInRepository _signInRepo = SingInRepository();
 
-  Future singIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: _emailController.text.trim().toLowerCase(),
-      password: _passwordController.text.trim(),
-    );
+  Future signIn() async {
+    bool esEmailValido = esCorreoValido(_emailController.text);
+    bool esPasswordValido = esContrasenaValida(_passwordController.text);
+
+    if (!esEmailValido || !esPasswordValido) {
+      setState(() {
+        if (!esEmailValido) {
+          _emailErrorNotifier.value = "Correo inválido";
+        }
+
+        if (!esPasswordValido) {
+          _passwordErrorNotifier.value =
+              "La contraseña debe tener al menos 6 caracteres";
+        }
+      });
+      return;
+    }
+
+    await _signInRepo.signIn(context, _emailController, _passwordController);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _obscureTextNotifier = ValueNotifier<bool>(true);
+    _emailErrorNotifier = ValueNotifier<String?>(null);
+    _passwordErrorNotifier = ValueNotifier<String?>(null);
+
+    _emailController.addListener(() {
+      if (_emailErrorNotifier.value != null &&
+          _emailController.text.isNotEmpty) {
+        setState(() {
+          _emailErrorNotifier.value = null;
+        });
+      }
+    });
+
+    _passwordController.addListener(() {
+      if (_passwordErrorNotifier.value != null &&
+          _passwordController.text.isNotEmpty) {
+        setState(() {
+          _passwordErrorNotifier.value = null;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    _emailController.removeListener(() {});
+    _passwordController.removeListener(() {});
     _emailController.dispose();
     _passwordController.dispose();
+    _obscureTextNotifier.dispose();
+    _emailErrorNotifier.dispose();
+    _passwordErrorNotifier.dispose();
     super.dispose();
   }
 
@@ -32,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -44,19 +95,12 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: height * 0.1),
-                const Icon(Icons.account_circle, size: 100),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  'Login',
-                  style: GoogleFonts.poppins(
-                    fontSize: 38,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Image.asset(
+                  'assets/images/logo-nombre.png',
+                  width: 200,
                 ),
                 const SizedBox(
-                  height: 40,
+                  height: 65,
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -65,16 +109,50 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        disabledBorder: InputBorder.none,
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: 'Email',
-                      ),
-                    ),
+                    child: ValueListenableBuilder<String?>(
+                        valueListenable: _emailErrorNotifier,
+                        builder: (context, emailError, child) {
+                          return TextFormField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              enabledBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                borderSide: BorderSide(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                borderSide: BorderSide(
+                                  color: Color(0xFF309975),
+                                ),
+                              ),
+                              errorText: emailError,
+                              errorBorder: emailError != null
+                                  ? OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide:
+                                          const BorderSide(color: Colors.red),
+                                    )
+                                  : null,
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: const BorderSide(color: Colors.red),
+                              ),
+                              hintText: 'Email',
+                              prefixIcon: const Icon(
+                                Icons.email_outlined,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {});
+                            },
+                          );
+                        }),
                   ),
                 ),
                 const SizedBox(
@@ -87,28 +165,81 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: 'Password',
-                      ),
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: _obscureTextNotifier,
+                      builder: (context, obscureText, child) {
+                        return TextFormField(
+                          controller: _passwordController,
+                          obscureText: obscureText,
+                          decoration: InputDecoration(
+                            errorBorder: _passwordErrorNotifier.value != null
+                                ? OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide:
+                                        const BorderSide(color: Colors.red),
+                                  )
+                                : null,
+                            errorText: _passwordErrorNotifier.value,
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(color: Colors.red),
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide:
+                                    const BorderSide(color: Colors.red)),
+                            enabledBorder: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
+                              borderSide: BorderSide(color: Color(0xFF309975)),
+                            ),
+                            hintText: 'Password',
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Colors.grey,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {
+                                _obscureTextNotifier.value = !obscureText;
+                              },
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
-                Row(
+                const SizedBox(
+                  height: 10,
+                ),
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text(
-                      'Forgot Password?',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    SizedBox(
+                      height: 30,
                     ),
+                    Text(
+                      '¿Olvidaste la contraseña?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF437B68),
+                        fontSize: 16,
+                        fontFamily: 'Montserrat',
+                        fontWeight: FontWeight.w400,
+                        height: 0.13,
+                      ),
+                    )
                   ],
                 ),
                 SizedBox(
@@ -116,16 +247,19 @@ class _LoginPageState extends State<LoginPage> {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey[300],
+                      backgroundColor: const Color(0xFF309975),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {
-                      singIn();
-                    },
+                    onPressed: _emailController.text.isNotEmpty &&
+                            _passwordController.text.isNotEmpty
+                        ? () {
+                            signIn();
+                          }
+                        : null,
                     child: Text(
-                      'Sign In',
+                      'Inicio de sesión',
                       style: GoogleFonts.poppins(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -139,12 +273,25 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Don\'t have an account?'),
+                    const Text(
+                      'No tienes una cuenta?',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Montserrat',
+                      ),
+                    ),
                     TextButton(
                       onPressed: () {
                         widget.showRegister();
                       },
-                      child: const Text('Register'),
+                      child: const Text(
+                        'Regístrate',
+                        style: TextStyle(
+                          color: Color(0xFF309975),
+                          fontSize: 16,
+                          fontFamily: 'Montserrat',
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -155,4 +302,12 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+}
+
+bool esCorreoValido(String email) {
+  return RegExp(r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b').hasMatch(email);
+}
+
+bool esContrasenaValida(String password) {
+  return password.length >= 6;
 }

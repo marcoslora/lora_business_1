@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lora_business_1/src/models/apartmentsModel.dart';
-import 'package:lora_business_1/src/view/apartments_detail.dart';
+import 'package:lora_business_1/src/view/apartments_views/apartments_detail.dart';
 
 Widget buildApartmentCard(BuildContext context, ApartmentModel apartment) {
   return InkWell(

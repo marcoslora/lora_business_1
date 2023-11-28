@@ -22,7 +22,7 @@ class UserRepository extends GetxController {
         duration: const Duration(seconds: 1),
         icon: const Icon(Icons.check_circle_outline_outlined),
       );
-    } catch (error, stackTrace) {
+    } catch (error) {
       Get.snackbar(
         "Error",
         "Error creating user: $error",

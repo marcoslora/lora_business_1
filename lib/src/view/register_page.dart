@@ -33,6 +33,14 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            widget.showLoginPage();
+          },
+          icon: const Icon(Icons.arrow_back),
+        ),
+      ),
       backgroundColor: Colors.grey[300],
       body: GestureDetector(
         onTap: () {
