@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
       default:
         bodyContent = const Text("Page not found");
     }
+    print("User: ${user.email}");
 
     return Scaffold(
       appBar: AppBar(
