@@ -29,9 +29,14 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      title: 'Lora Business',
+      theme: ThemeData(
+        primarySwatch: Colors.lightGreen,
+        useMaterial3: true,
+      ),
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      home: const MainPage(),
     );
   }
 }

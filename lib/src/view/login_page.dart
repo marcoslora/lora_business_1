@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_business_1/src/repository/sing_in_repository.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,7 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late ValueNotifier<bool> _obscureTextNotifier;
-  final SingInRepository _signInRepo = SingInRepository();
+  final AuthRepository _authRepository = AuthRepository();
 
   Future signIn() async {
     bool esEmailValido = esCorreoValido(_emailController.text);
@@ -36,7 +35,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    await _signInRepo.signIn(context, _emailController, _passwordController);
+    await _authRepository.signInWithEmail(
+        context, _emailController.text, _passwordController.text);
   }
 
   @override
@@ -258,12 +258,12 @@ class _LoginPageState extends State<LoginPage> {
                             signIn();
                           }
                         : null,
-                    child: Text(
+                    child: const Text(
                       'Inicio de sesión',
-                      style: GoogleFonts.poppins(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ),
                 ),

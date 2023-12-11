@@ -1,10 +1,6 @@
-// ignore_for_file: avoid_print
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:lora_business_1/src/auth/models/user_model.dart';
+import 'package:lora_business_1/src/Widgets/inputs_text_widgets.dart';
+import 'package:lora_business_1/src/repository/sing_in_repository.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -20,28 +16,54 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final ValueNotifier<String?> _nameErrorNotifier =
+      ValueNotifier<String?>(null);
+  final ValueNotifier<String?> _emailErrorNotifier =
+      ValueNotifier<String?>(null);
+  final ValueNotifier<String?> _passwordErrorNotifier =
+      ValueNotifier<String?>(null);
+  final ValueNotifier<bool> _obscureTextNotifier = ValueNotifier<bool>(true);
+  final AuthRepository _authRepository = AuthRepository();
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _nameController.dispose();
+    _emailErrorNotifier.dispose();
+    _passwordErrorNotifier.dispose();
+    _obscureTextNotifier.dispose();
+
     super.dispose();
+  }
+
+  void signUp() {
+    if (_passwordController.text.trim() !=
+        _confirmPasswordController.text.trim()) {
+      _passwordErrorNotifier.value = "Las contraseñas no coinciden";
+      return;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF309975),
+        centerTitle: true,
+        title: const Text('Register',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold)),
         leading: IconButton(
           onPressed: () {
             widget.showLoginPage();
           },
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
       ),
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.white,
       body: GestureDetector(
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -52,17 +74,9 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: height * 0.1),
-                const Icon(Icons.account_circle, size: 100),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  'Register Page',
-                  style: GoogleFonts.poppins(
-                    fontSize: 38,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Image.asset(
+                  'assets/images/logo-nombre.png',
+                  width: 200,
                 ),
                 const SizedBox(
                   height: 40,
@@ -74,14 +88,31 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: 'Name',
-                      ),
+                    child: InputTextWidgets.inputTextWidget(
+                        errorNotifier: _nameErrorNotifier,
+                        inputText: "Nombre",
+                        prefixIcon: const Icon(Icons.person_2_outlined),
+                        inputTextController: _nameController,
+                        updateState: () => setState(() {}),
+                        isPassword: false),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: InputTextWidgets.inputTextWidget(
+                      errorNotifier: _emailErrorNotifier,
+                      inputText: "Email",
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      inputTextController: _emailController,
+                      updateState: () => setState(() {}),
                     ),
                   ),
                 ),
@@ -95,15 +126,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: TextFormField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        disabledBorder: InputBorder.none,
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: 'Email',
-                      ),
+                    child: InputTextWidgets.inputTextWidget(
+                      errorNotifier: _passwordErrorNotifier,
+                      inputText: "Password",
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      inputTextController: _passwordController,
+                      updateState: () => setState(() {}),
+                      isPassword: true,
+                      obscureTextNotifier: _obscureTextNotifier,
                     ),
                   ),
                 ),
@@ -117,37 +147,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: 'Password',
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: TextFormField(
-                      controller: _confirmPasswordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        hintText: 'Confirm Password',
-                      ),
+                    child: InputTextWidgets.inputTextWidget(
+                      errorNotifier: _passwordErrorNotifier,
+                      inputText: "Confirm Password",
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      inputTextController: _confirmPasswordController,
+                      updateState: () => setState(() {}),
+                      isPassword: true,
+                      obscureTextNotifier: _obscureTextNotifier,
                     ),
                   ),
                 ),
@@ -159,19 +166,33 @@ class _RegisterPageState extends State<RegisterPage> {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey[300],
+                      backgroundColor: const Color(0xFF309975),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                     onPressed: () {
-                      signUp();
+                      _authRepository
+                          .signUpWithEmail(
+                        context,
+                        _emailController.text,
+                        _passwordController.text,
+                        _nameController.text,
+                      )
+                          .catchError((error) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                            "Error: ${error.toString()}",
+                          ),
+                        ));
+                      });
                     },
-                    child: Text(
+                    child: const Text(
                       'Sign Up',
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -187,7 +208,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       onPressed: () {
                         widget.showLoginPage();
                       },
-                      child: const Text('Login now'),
+                      child: const Text(
+                        'Login now',
+                        style: TextStyle(
+                          color: Color(0xFF309975),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -197,39 +224,5 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
-  }
-
-  void signUp() {
-    if (_passwordController.text.trim() !=
-        _confirmPasswordController.text.trim()) {
-      print('Password not match');
-      return;
-    }
-
-    FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-            email: _emailController.text.trim().toLowerCase(),
-            password: _passwordController.text.trim())
-        .then((userCredential) {
-      UserModel newUser = UserModel(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-        name: _nameController.text.trim(),
-        lastName: '',
-        uid: userCredential.user!.uid,
-      );
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set(newUser.toJson())
-          .then((value) {
-        print('User added to Firestore');
-      }).catchError((onError) {
-        print('Error saving user to Firestore: $onError');
-      });
-      print('Success');
-    }).catchError((onError) {
-      print(onError);
-    });
   }
 }

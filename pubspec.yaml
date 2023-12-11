@@ -39,7 +39,6 @@ dependencies:
   cloud_firestore: ^4.9.3
   get: ^4.6.6
   intl: ^0.18.1
-  google_fonts:
 
 dev_dependencies:
   flutter_test:
