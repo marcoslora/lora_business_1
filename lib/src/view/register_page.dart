@@ -1,6 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:lora_business_1/src/Widgets/inputs_text_widgets.dart';
 import 'package:lora_business_1/src/repository/sing_in_repository.dart';
+import 'package:lora_business_1/src/utils/CustomPopup.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -11,6 +15,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  static const int maxAttempts = 30;
+  static const int lockoutTime = 24 * 60 * 60 * 1000;
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -37,16 +44,74 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  void signUp() {
+  void signUp() async {
     if (_passwordController.text.trim() !=
         _confirmPasswordController.text.trim()) {
       _passwordErrorNotifier.value = "Las contraseñas no coinciden";
       return;
     }
+
+    bool canShowPopup = await checkAttemptsAndShowPopup();
+    if (!canShowPopup) {
+      return;
+    }
+
+    const int validatedCode = 000001;
+    CustomPopUp.showDigitInputPopup(context, (enteredDigits) async {
+      final prefs = await SharedPreferences.getInstance();
+      if (int.tryParse(enteredDigits) == validatedCode) {
+        await prefs.setInt('attempts', 0);
+        _authRepository
+            .signUpWithEmail(
+          context,
+          _emailController.text,
+          _passwordController.text,
+          _nameController.text,
+        )
+            .catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error: ${error.toString()}")),
+          );
+        });
+      } else {
+        int attempts = prefs.getInt('attempts') ?? 0;
+        await updateAttempts(prefs, attempts);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Número inválido")),
+        );
+      }
+    });
+  }
+
+  Future<bool> checkAttemptsAndShowPopup() async {
+    final prefs = await SharedPreferences.getInstance();
+    int attempts = prefs.getInt('attempts') ?? 0;
+    int lastAttemptTime = prefs.getInt('lastAttemptTime') ?? 0;
+
+    if (attempts >= maxAttempts &&
+        DateTime.now().millisecondsSinceEpoch - lastAttemptTime < lockoutTime) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Límite de intentos alcanzado")),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  updateAttempts(SharedPreferences prefs, int attempts) async {
+    await prefs.setInt('attempts', attempts + 1);
+    await prefs.setInt(
+        'lastAttemptTime', DateTime.now().millisecondsSinceEpoch);
   }
 
   @override
   Widget build(BuildContext context) {
+    bool canSignUp = _nameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _confirmPasswordController.text.isNotEmpty;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF309975),
@@ -171,22 +236,11 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {
-                      _authRepository
-                          .signUpWithEmail(
-                        context,
-                        _emailController.text,
-                        _passwordController.text,
-                        _nameController.text,
-                      )
-                          .catchError((error) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                            "Error: ${error.toString()}",
-                          ),
-                        ));
-                      });
-                    },
+                    onPressed: canSignUp
+                        ? () {
+                            signUp();
+                          }
+                        : null,
                     child: const Text(
                       'Sign Up',
                       style: TextStyle(

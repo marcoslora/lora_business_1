@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lora_business_1/src/auth/models/user_model.dart';
+import 'package:lora_business_1/src/utils/validator.dart';
 
 class AuthRepository {
   Future<void> signInWithEmail(
@@ -22,6 +23,15 @@ class AuthRepository {
 
   Future<void> signUpWithEmail(
       BuildContext context, String email, String password, String name) async {
+    if (!Validator.esCorreoValido(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Correo electrónico inválido")));
+      return;
+    }
+    if (!Validator.esContrasenaValida(password)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("La contraseña debe tener al menos 6 caracteres")));
+    }
     try {
       final result = await InternetAddress.lookup('example.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -72,6 +82,8 @@ class AuthRepository {
       errorMessage = "Contraseña incorrecta";
     } else if (e.code == 'email-already-in-use') {
       errorMessage = "El correo ya está en uso";
+    } else if (e.code == "Password should be at least 6 characters") {
+      errorMessage = "La contraseña debe tener al menos 6 caracteres";
     }
 
     ScaffoldMessenger.of(context)

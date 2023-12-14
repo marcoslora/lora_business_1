@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lora_business_1/src/view/apartments_views/apartments_page.dart';
-import 'package:lora_business_1/src/view/colmado_page.dart';
+import 'package:lora_business_1/src/view/apartments_views/colmado_page.dart';
 import 'package:lora_business_1/src/view/loessa_page.dart';
 
 class HomePage extends StatefulWidget {

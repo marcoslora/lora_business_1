@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lora_business_1/src/repository/sing_in_repository.dart';
+import 'package:lora_business_1/src/utils/validator.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegister;
@@ -18,8 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   final AuthRepository _authRepository = AuthRepository();
 
   Future signIn() async {
-    bool esEmailValido = esCorreoValido(_emailController.text);
-    bool esPasswordValido = esContrasenaValida(_passwordController.text);
+    bool esEmailValido = Validator.esCorreoValido(_emailController.text);
+    bool esPasswordValido =
+        Validator.esContrasenaValida(_passwordController.text);
 
     if (!esEmailValido || !esPasswordValido) {
       setState(() {
@@ -302,12 +304,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
-
-bool esCorreoValido(String email) {
-  return RegExp(r'\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b').hasMatch(email);
-}
-
-bool esContrasenaValida(String password) {
-  return password.length >= 6;
 }

@@ -175,6 +175,46 @@ class CustomPopUp {
       },
     );
   }
+
+  static void showDigitInputPopup(
+      BuildContext context, Function(String) onDigitsEntered) {
+    final TextEditingController digitController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: const Text('Ingrese los 6 dígitos'),
+          content: Container(
+            height: 150,
+            child: Column(
+              children: [
+                TextField(
+                  controller: digitController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    counterText: "",
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    onDigitsEntered(digitController.text);
+                  },
+                  child: const Text('Confirmar'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class Formatter {

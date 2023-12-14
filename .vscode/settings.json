@@ -14,7 +14,9 @@
     "mostrar",
     "obtener",
     "pago",
-    "Pagos"
+    "Pagos",
+    "prefs",
+    "unfocus"
   ],
   "java.configuration.updateBuildConfiguration": "interactive"
 }
