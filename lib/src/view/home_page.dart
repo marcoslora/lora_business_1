@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lora_business_1/src/Widgets/side_menu.dart';
 import 'package:lora_business_1/src/view/apartments_views/apartments_page.dart';
 import 'package:lora_business_1/src/view/apartments_views/colmado_page.dart';
 import 'package:lora_business_1/src/view/loessa_page.dart';
@@ -42,12 +43,12 @@ class _HomePageState extends State<HomePage> {
       default:
         bodyContent = const Text("Page not found");
     }
-    print("User: ${user.email}");
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lora Business'),
       ),
+      drawer: const SideMenu(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[

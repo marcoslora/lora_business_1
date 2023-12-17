@@ -7,18 +7,29 @@ import 'package:lora_business_1/src/auth/models/user_model.dart';
 import 'package:lora_business_1/src/utils/validator.dart';
 
 class AuthRepository {
-  Future<void> signInWithEmail(
+  Future<bool> signInWithEmail(
       BuildContext context, String email, String password) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email.trim().toLowerCase(),
-        password: password.trim(),
-      );
-    } on FirebaseAuthException catch (e) {
-      _handleFirebaseAuthException(context, e);
-    } catch (e) {
-      _handleGeneralException(context, e);
+      final result = await InternetAddress.lookup('example.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        try {
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: email.trim().toLowerCase(),
+            password: password.trim(),
+          );
+          return false;
+        } on FirebaseAuthException catch (e) {
+          return _handleFirebaseAuthException(context, e);
+        } catch (e) {
+          _handleGeneralException(context, e);
+          return false;
+        }
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("No hay conexión a Internet")));
     }
+    return false;
   }
 
   Future<void> signUpWithEmail(
@@ -73,21 +84,28 @@ class AuthRepository {
     }
   }
 
-  void _handleFirebaseAuthException(
+  bool _handleFirebaseAuthException(
       BuildContext context, FirebaseAuthException e) {
     String errorMessage = "Error: ${e.message}";
-    if (e.code == 'user-not-found') {
-      errorMessage = "Usuario no encontrado";
-    } else if (e.code == 'wrong-password') {
-      errorMessage = "Contraseña incorrecta";
-    } else if (e.code == 'email-already-in-use') {
-      errorMessage = "El correo ya está en uso";
-    } else if (e.code == "Password should be at least 6 characters") {
-      errorMessage = "La contraseña debe tener al menos 6 caracteres";
+    bool isWrongPassword = false;
+    print(e.code + "marcos lora ");
+    switch (e.code) {
+      case 'user-not-found':
+        errorMessage = "Usuario no encontrado";
+        break;
+      case 'invalid-credential':
+        errorMessage = "Credenciales inválidas";
+        isWrongPassword = true;
+        break;
+      case 'email-already-in-use':
+        errorMessage = "El correo ya está en uso";
+        break;
     }
 
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(errorMessage)));
+
+    return isWrongPassword;
   }
 
   void _handleGeneralException(BuildContext context, dynamic e) {

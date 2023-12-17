@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pinput/pinput.dart';
 
 class CustomPopUp {
   static void mostrarDialogoAgregarPago(
@@ -176,9 +177,43 @@ class CustomPopUp {
     );
   }
 
+  static void showAlertDialog(
+      BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blueGrey,
+                ),
+                child: const Text('OK')),
+          ],
+          elevation: 24.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+        );
+      },
+    );
+  }
+
   static void showDigitInputPopup(
       BuildContext context, Function(String) onDigitsEntered) {
-    final TextEditingController digitController = TextEditingController();
+    final pinController = TextEditingController();
+    final pinFocusNode = FocusNode();
+    final isButtonActive = ValueNotifier<bool>(false);
+
+    pinController.addListener(() {
+      isButtonActive.value = pinController.text.length == 4;
+    });
 
     showDialog(
       context: context,
@@ -187,26 +222,31 @@ class CustomPopUp {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
-          title: const Text('Ingrese los 6 dígitos'),
+          title: const Text('Ingrese los 4 dígitos:'),
           content: Container(
             height: 150,
             child: Column(
               children: [
-                TextField(
-                  controller: digitController,
+                Pinput(
+                  controller: pinController,
+                  focusNode: pinFocusNode,
+                  length: 4,
                   keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  decoration: InputDecoration(
-                    counterText: "",
-                  ),
                 ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    onDigitsEntered(digitController.text);
+                const SizedBox(height: 20),
+                ValueListenableBuilder<bool>(
+                  valueListenable: isButtonActive,
+                  builder: (context, isActive, child) {
+                    return ElevatedButton(
+                      onPressed: isActive
+                          ? () {
+                              Navigator.of(context).pop();
+                              onDigitsEntered(pinController.text);
+                            }
+                          : null,
+                      child: const Text('Confirmar'),
+                    );
                   },
-                  child: const Text('Confirmar'),
                 ),
               ],
             ),
