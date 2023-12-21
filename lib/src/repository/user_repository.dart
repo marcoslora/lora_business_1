@@ -10,6 +10,23 @@ class UserRepository extends GetxController {
   static UserRepository get to => Get.find();
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  Future<String?> getUserName(context, user) async {
+    try {
+      var userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      return userData.data()?['name'];
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error al obtener el nombre del usuario'),
+        ),
+      );
+      return null;
+    }
+  }
+
   Future<void> createUser(UserModel user) async {
     try {
       await _db.collection('users').add(user.toJson());

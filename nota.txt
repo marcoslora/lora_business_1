@@ -1,0 +1,11 @@
+update CocoaPods:
+Esta instalado por brew
+brew update
+brew upgrade cocoapods
+
+
+pod update
+
+scrcpy
+scrcpy -s emulator-5554
+scrcpy -s R5CT91J8KNH

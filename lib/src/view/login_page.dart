@@ -1,7 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:lora_business_1/src/repository/sing_in_repository.dart';
 import 'package:lora_business_1/src/utils/CustomPopup.dart';
