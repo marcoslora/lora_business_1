@@ -56,7 +56,7 @@ class MenuSelectionRoute extends StatelessWidget {
       case 1:
         return const ApartmentsPage();
       case 2:
-        return const LoessaPage();
+        return const ChatGPTPage();
       case 3:
         return const ColmadosPage();
       default:

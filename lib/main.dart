@@ -1,18 +1,23 @@
 // import 'package:firebase_core/firebase_core.dart';
+import 'package:dart_openai/dart_openai.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:lora_business_1/src/auth/main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  OpenAI.apiKey = dotenv.env['OPENAI_API_KEY']!;
+
   await initializeDateFormatting('es_ES', null);
   if (kIsWeb) {
     await Firebase.initializeApp(
       name: 'Lora Business',
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyBtd2_qSWYIfBDO-tnT7IYyy0BlGLJaITc",
+      options: FirebaseOptions(
+          apiKey: dotenv.env['FIREBASE_API_KEY']!,
           authDomain: "lora-business-flutter.firebaseapp.com",
           projectId: "lora-business-flutter",
           storageBucket: "lora-business-flutter.appspot.com",

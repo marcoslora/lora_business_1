@@ -29,6 +29,98 @@ class ApartmentDetailsPage extends StatelessWidget {
     });
   }
 
+  void _mostrarDialogoMasInformacion(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Información adicional'),
+          content: SizedBox(
+            height: 150,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    text: 'Fecha de vencimiento del contrato: ',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                    children: [
+                      TextSpan(
+                        text: apartment.contractEndDate,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+                RichText(
+                  text: TextSpan(
+                    text: 'Ipi: ',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                    children: [
+                      TextSpan(
+                        text: Formatter.formatCurrency(apartment.ipi),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal, color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: ', 01/Sept/${DateTime.now().year}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 5),
+                RichText(
+                  text: TextSpan(
+                    text: 'Seguro: ',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                    children: [
+                      TextSpan(
+                        text:
+                            Formatter.formatCurrency(apartment.insuranceAnual),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+                Text('Renovación 01/Octubre/${DateTime.now().year}'),
+                const SizedBox(height: 5),
+                RichText(
+                  text: TextSpan(
+                    text: 'Asociación de propietarios: ',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black),
+                    children: [
+                      TextSpan(
+                        text: Formatter.formatCurrency(
+                            apartment.homeOwnerAssociation),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.normal, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +136,10 @@ class ApartmentDetailsPage extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 50,
-                      backgroundImage: NetworkImage(apartment.imageUrl),
+                      backgroundImage:
+                          AssetImage('assets/images/lisa-gustavo.jpeg'),
                       backgroundColor: Colors.transparent,
                     ),
                     const SizedBox(width: 10),
@@ -69,11 +162,14 @@ class ApartmentDetailsPage extends StatelessWidget {
                                 fontSize: 16,
                               )),
                           const SizedBox(height: 3),
-                          Text(
-                              'Terminación del contrato: ${apartment.contractEndDate}'),
-                          const SizedBox(height: 3),
-                          Text(
-                              'Ipi: \$${apartment.ipi}.00, 01/Sept/${DateTime.now().year}'),
+                          TextButton.icon(
+                              onPressed: () =>
+                                  _mostrarDialogoMasInformacion(context),
+                              icon: const Icon(Icons.info_outline),
+                              label: const Text('Mas información',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ))),
                           const SizedBox(height: 3),
                         ],
                       ),

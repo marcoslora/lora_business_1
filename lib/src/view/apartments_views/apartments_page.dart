@@ -36,12 +36,12 @@ List<ApartmentModel> apartments = [
       imageUrl:
           'https://uphomesimages.com/bdomls/c415b43e05a791f9c3ca7bba87ccf9a1/main/image-c415b43e05a791f9c3ca7bba87ccf9a1-0.jpg',
       name: 'Gustavo',
-      rent: 1200,
+      rent: 1250,
       ipi: 974,
       ipiDate: "01/09/2023",
       insuranceAnual: 600,
       homeOwnerAssociation: 268,
-      address: '4721 WALDEN POND DR # C',
+      address: '4721 Walden Pond DR C',
       contractEndDate: "31/12/2023"),
   ApartmentModel(
     id: "2",

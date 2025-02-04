@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lora_business_1/src/models/apartmentsModel.dart';
+import 'package:lora_business_1/src/utils/CustomPopup.dart';
 import 'package:lora_business_1/src/view/apartments_views/apartments_detail.dart';
 
 Widget buildApartmentCard(BuildContext context, ApartmentModel apartment) {
@@ -31,12 +32,15 @@ Widget buildApartmentCard(BuildContext context, ApartmentModel apartment) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(apartment.name,
+                Text(apartment.address,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold)), // Nombre del apartamento
-                Text('\$${apartment.rent}'), // Renta
-                Text(
-                    'Contract End: ${apartment.contractEndDate}'), // Fecha de vencimiento del contrato
+                        fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(apartment.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+
+                Text(Formatter.formatCurrency(apartment.rent)),
+                // Text(
+                //     'Contract End: ${apartment.contractEndDate}'), // Fecha de vencimiento del contrato
               ],
             ),
           ),
