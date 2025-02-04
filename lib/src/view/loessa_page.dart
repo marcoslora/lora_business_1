@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lora_business_1/src/utils/ChatGTP.dart';
 
 import 'package:flutter/material.dart';
@@ -21,8 +22,9 @@ class _ChatGPTPageState extends State<ChatGPTPage> {
   void initState() {
     super.initState();
     _chatService = OpenAIChatService();
-    // Configura la API key aquí
-    _chatService.setApiKey("");
+    _chatService.setApiKey(
+      dotenv.env['OPENAI_API_KEY']!,
+    );
     final userMessage = OpenAIChatCompletionChoiceMessageModel(
       content: [
         OpenAIChatCompletionChoiceMessageContentItemModel.text(
