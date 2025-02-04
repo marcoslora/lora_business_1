@@ -22,8 +22,7 @@ class _ChatGPTPageState extends State<ChatGPTPage> {
     super.initState();
     _chatService = OpenAIChatService();
     // Configura la API key aquí
-    _chatService
-        .setApiKey("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");
+    _chatService.setApiKey("");
     final userMessage = OpenAIChatCompletionChoiceMessageModel(
       content: [
         OpenAIChatCompletionChoiceMessageContentItemModel.text(
