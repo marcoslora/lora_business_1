@@ -1,5 +1,5 @@
 // import 'package:firebase_core/firebase_core.dart';
-import 'package:dart_openai/dart_openai.dart';
+// import 'package:dart_openai/dart_openai.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:lora_business_1/src/auth/main_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  OpenAI.apiKey = dotenv.env['OPENAI_API_KEY']!;
+  // OpenAI.apiKey = dotenv.env['OPENAI_API_KEY']!;
 
   await initializeDateFormatting('es_ES', null);
   if (kIsWeb) {
